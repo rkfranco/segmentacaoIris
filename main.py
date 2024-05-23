@@ -4,35 +4,26 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-param_um = 20
-param_dois = 31
+param_1 = 20
+param_2 = 31
 
 
 def segmentar_iris(img):
     # Borra um pouco a imagem para auxiliar o processamento
     roi = cv2.medianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
 
-    min_radius = 80
-    max_radius = 210
-
-    # Aplica um Treshold para otimizar o processamento
     threshold = cv2.threshold(roi, 100, 255, cv2.THRESH_BINARY)[1]
 
-    # Aplica o algoritmo, param1 = valor do parametro.
-    circles = cv2.HoughCircles(threshold, cv2.HOUGH_GRADIENT,
-                               2,
-                               2000,
-                               param1=param_um,
-                               param2=param_dois,
-                               minRadius=min_radius,
-                               maxRadius=200)
+    circles = None
+    min_radius = 80
+    max_radius = 200
 
     while circles is None or circles.size == 0:
         circles = cv2.HoughCircles(threshold, cv2.HOUGH_GRADIENT,
                                    2,
                                    2000,
-                                   param1=param_um,
-                                   param2=param_dois,
+                                   param1=param_1,
+                                   param2=param_2,
                                    minRadius=min_radius,
                                    maxRadius=max_radius)
         max_radius = max_radius + 10
@@ -55,16 +46,14 @@ def remover_pupila(img):
     # Borra um pouco a imagem para auxiliar o processamento
     roi = cv2.medianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
 
-    # Aplicando threshold para destacar a pupila
     threshold = cv2.threshold(roi, 30, 255, cv2.THRESH_BINARY)[1]
 
-    # Aplica o algoritmo, param1 = valor do parametro.
     circles = cv2.HoughCircles(threshold,
                                cv2.HOUGH_GRADIENT,
                                2,
                                500,
-                               param1=param_um,
-                               param2=param_dois,
+                               param1=param_1,
+                               param2=param_2,
                                minRadius=20,
                                maxRadius=50)
 
@@ -92,4 +81,4 @@ if __name__ == '__main__':
         iris_sem_pupila = remover_pupila(iris)
 
         plt.imshow(iris_sem_pupila)
-        plt.savefig('result/' + fileName, format='png')
+        plt.savefig('result/' + fileName, format='jpg')
